@@ -9,3 +9,6 @@ build
 
 #Ignore .DS_Store file created by MacOS
 .DS_Store
+
+#Ignore the bin folder created by IDE
+bin
