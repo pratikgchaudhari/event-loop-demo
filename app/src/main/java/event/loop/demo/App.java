@@ -8,7 +8,36 @@ public class App {
         return "Hello World!";
     }
 
-    public static void main(String[] args) {
-        System.out.println(new App().getGreeting());
+    public static void main(String[] args) throws InterruptedException {
+        EventLoop eventLoop = new EventLoop();
+
+        new Thread(() -> {
+            for (int i = 0; i < 6; i++) {
+                delay(1000);
+                eventLoop.dispatch(new Event("tick", i));
+            }
+        }).start();
+
+        new Thread(() -> {
+            delay(2500);
+            eventLoop.dispatch(new Event("hello", "World"));
+            delay(800);
+            eventLoop.dispatch(new Event("hello", "Matrix"));
+        }).start();
+
+        eventLoop
+                .on("tick", i -> System.out.println(String.format("Tick #%s", i)))
+                .on("hello", i -> System.out.println(String.format("Hello %s", i)))
+                .on("stop", i -> eventLoop.stop())
+                .run();
+
+    }
+
+    private static void delay(long millis) {
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 }
