@@ -47,7 +47,7 @@ public class App {
                 switch (usersChoice) {
                     case "1":
                         uniqueEventKey = generateUniqueEventKey("hello", eventId++);
-                        eventLoop.on(uniqueEventKey, data -> String.format("Hello %s", data));
+                        eventLoop.on(uniqueEventKey, data -> String.format("Hello! %s", data));
                         eventLoop.dispatch(new Event(uniqueEventKey, "How are you doing today?",
                                 isAsynchronous(operationType)));
                         break;
