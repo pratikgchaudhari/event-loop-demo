@@ -1,14 +1,25 @@
 package event.loop.demo;
 
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedDeque;
-import java.util.function.Consumer;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.ArrayDeque;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Queue;
+import java.util.function.Function;
 
 public class EventLoop {
-    private ConcurrentLinkedDeque<Event> events = new ConcurrentLinkedDeque<>();
-    private ConcurrentHashMap<String, Consumer<Object>> handlers = new ConcurrentHashMap<>();
+    private Queue<Event> events;
+    private Map<String, Function<String, String>> handlers;
+    private Queue<EventResult> processedEvents;
 
-    public EventLoop on(String key, Consumer<Object> handler) {
+    EventLoop() {
+        events = new ArrayDeque<>();
+        handlers = new HashMap<>();
+        processedEvents = new ArrayDeque<>();
+    }
+
+    public EventLoop on(String key, Function<String, String> handler) {
         handlers.put(key, handler);
         return this;
     }
@@ -23,20 +34,51 @@ public class EventLoop {
 
     public void run() {
 
-        do {
-            if (!events.isEmpty()) {
-                Event event = events.pop();
+        if (newEventsAreAvailable(events)) {
+            Event event = events.remove();
 
-                System.out.println(String.format("Received Event: %s", event.key));
+            System.out.println(String.format("Received Event: %s\n", event.key));
 
-                if (handlers.containsKey(event.key)) {
-                    handlers.get(event.key).accept(event.data);
+            if (handlers.containsKey(event.key)) {
+                var startTime = Instant.now();
+
+                if (event.asynchronous) {
+                    processAsynchronously(event);
                 } else {
-                    System.out.println(String.format("No handler found for %s", event.key));
+                    processSynchronously(event);
                 }
+
+                var endTime = Instant.now();
+
+                System.out.println(String.format("Event Loop was blocked for %s ms due to this operation \n",
+                        Duration.between(startTime, endTime).toMillis()));
+            } else {
+                System.out.println(String.format("No handler found for %s", event.key));
             }
+        }
 
-        } while (true);
+        if (resultsOfAsyncEventsAreAvailable(processedEvents)) {
+            produceOutputFor(processedEvents.remove());
+        }
+    }
 
+    private void processAsynchronously(Event event) {
+        new Thread(() -> processedEvents.add(new EventResult(event.key, handlers.get(event.key).apply(event.data)))).start();
+    }
+
+    private void processSynchronously(Event event) {
+        produceOutputFor(new EventResult(event.key, handlers.get(event.key).apply(event.data)));
+    }
+
+    private void produceOutputFor(EventResult eventResult) {
+        System.out.println(String.format("Output for Event %s : %s\n", eventResult.key, eventResult.result));
+    }
+
+    private boolean newEventsAreAvailable(Queue<Event> events) {
+        return !events.isEmpty();
+    }
+
+    private boolean resultsOfAsyncEventsAreAvailable(Queue<EventResult> events) {
+        return !processedEvents.isEmpty();
     }
 }
