@@ -6,4 +6,4 @@
 
 > Hence, I built a simple event loop of my own in Java so that I could observe what happens if the event loop gets *blocked* on a long-running task.
 
-[Screen recording of a Terminal executing a simple task that prints "Hello"](https://user-images.githubusercontent.com/34649848/170871066-e48c9ee9-75b0-44ef-862b-6dc9a395fd90.gif)
+![](https://user-images.githubusercontent.com/34649848/170871066-e48c9ee9-75b0-44ef-862b-6dc9a395fd90.gif)
