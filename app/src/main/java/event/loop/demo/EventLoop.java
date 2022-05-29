@@ -5,13 +5,13 @@ import java.time.Instant;
 import java.util.ArrayDeque;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Queue;
+import java.util.Deque;
 import java.util.function.Function;
 
 public class EventLoop {
-    private Queue<Event> events;
+    private Deque<Event> events;
     private Map<String, Function<String, String>> handlers;
-    private Queue<EventResult> processedEvents;
+    private Deque<EventResult> processedEvents;
 
     EventLoop() {
         events = new ArrayDeque<>();
@@ -35,7 +35,7 @@ public class EventLoop {
     public void run() {
 
         if (newEventsAreAvailable(events)) {
-            Event event = events.remove();
+            Event event = events.poll();
 
             System.out.println(String.format("Received Event: %s\n", event.key));
 
@@ -58,7 +58,7 @@ public class EventLoop {
         }
 
         if (resultsOfAsyncEventsAreAvailable(processedEvents)) {
-            produceOutputFor(processedEvents.remove());
+            produceOutputFor(processedEvents.poll());
         }
     }
 
@@ -74,11 +74,11 @@ public class EventLoop {
         System.out.println(String.format("Output for Event %s : %s\n", eventResult.key, eventResult.result));
     }
 
-    private boolean newEventsAreAvailable(Queue<Event> events) {
+    private boolean newEventsAreAvailable(Deque<Event> events) {
         return !events.isEmpty();
     }
 
-    private boolean resultsOfAsyncEventsAreAvailable(Queue<EventResult> events) {
+    private boolean resultsOfAsyncEventsAreAvailable(Deque<EventResult> events) {
         return !processedEvents.isEmpty();
     }
 }
