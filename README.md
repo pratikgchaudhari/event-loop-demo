@@ -1,5 +1,23 @@
 # event-loop-demo
 
+> We have all hear about it!
+
+> We are all fond of it!
+
+> We all have used it in one way or another!
+
+> And yet, we seem to have a superficial understanding of how it actually works!
+
+> It is single-threaded, and yet it's considered robust enough to run a production-grade application without any hiccups.
+
+> Yes, you guessed it right! I'm talking about the might [Event Loop](https://nodejs.org/en/docs/guides/event-loop-timers-and-nexttick/)
+
+> The Event Loop, although a general programming construct, is more often heard in conjuction with Node.js, the highly performant, server-side JavaScript runtime.
+
+> But the usage of Event Loop is not limited to just Node.js.
+
+> It is also used by [Netty](https://netty.io/), an asynchronous, event-driven, network application framework for developing highly performant web applications that can scale to tens of thousands concurrent connections, also typically known as the [C10K problem](https://dzone.com/articles/thousands-of-socket-connections-in-java-practical).
+
 > A project to learn how _Event Loop_ works.
 
 > I wanted to undertand how the _Event Loop_ that sits at the core of asynchronous event-driven frameworks such as _Netty_ handled synchronous as well as asynchronous execution of code trigerred in response to various events (and why it preferred doing the latter over the former).
