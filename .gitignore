@@ -12,3 +12,6 @@ build
 
 #Ignore the bin folder created by IDE
 bin
+
+#Ignore the .idea folder created by IntelliJ IDE
+.idea
