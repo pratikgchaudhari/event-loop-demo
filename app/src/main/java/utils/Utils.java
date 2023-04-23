@@ -8,9 +8,13 @@ import okhttp3.Request;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Random;
 import java.util.Scanner;
 
 public class Utils {
+
+    Random random = new Random();
+
     public String readFile(String fileName) {
         var lines = new StringBuilder();
 
@@ -34,6 +38,8 @@ public class Utils {
         var latestNews = new StringBuilder();
         var httpClient = new OkHttpClient();
 
+        var newsItemIndex = random.nextInt(11);
+
         var request = new Request.Builder()
                 .url(String.format("https://api.nytimes.com/svc/topstories/v2/technology.json?api-key=%s", apiKey))
                 .build();
@@ -45,7 +51,7 @@ public class Utils {
 
             if (newsItemsAreAvailable(newsItems)) {
                 latestNews.append(
-                        String.format("%s - %s", newsItems.results.get(0).title, newsItems.results.get(0).byLine));
+                        String.format("%s - %s", newsItems.results.get(newsItemIndex).title, newsItems.results.get(newsItemIndex).byLine));
             }
 
         } catch (IOException e) {
