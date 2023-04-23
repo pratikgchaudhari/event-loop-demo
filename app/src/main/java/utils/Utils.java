@@ -68,6 +68,6 @@ public class Utils {
         return operationType.equals("2");
     }
     public boolean userHasNotChosenToExit(String userChoice) {
-        return !userChoice.equals("4");
+        return !userChoice.equals("5");
     }
 }

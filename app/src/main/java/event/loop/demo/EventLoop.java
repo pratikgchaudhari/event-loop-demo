@@ -9,9 +9,9 @@ import java.util.Deque;
 import java.util.function.Function;
 
 public class EventLoop {
-    private Deque<Event> events;
-    private Map<String, Function<String, String>> handlers;
-    private Deque<EventResult> processedEvents;
+    private final Deque<Event> events;
+    private final Map<String, Function<String, String>> handlers;
+    private final Deque<EventResult> processedEvents;
 
     EventLoop() {
         events = new ArrayDeque<>();
@@ -28,16 +28,12 @@ public class EventLoop {
         events.add(event);
     }
 
-    public void stop() {
-        Thread.currentThread().interrupt();
-    }
-
     public void run() {
 
-        if (newEventsAreAvailable(events)) {
-            Event event = events.poll();
+        Event event = events.poll();
 
-            System.out.println(String.format("Received Event: %s\n", event.key));
+        if (event != null) {
+            System.out.printf("%nReceived Event: %s%n", event.key);
 
             if (handlers.containsKey(event.key)) {
                 var startTime = Instant.now();
@@ -50,15 +46,17 @@ public class EventLoop {
 
                 var endTime = Instant.now();
 
-                System.out.println(String.format("Event Loop was blocked for %s ms due to this operation \n",
-                        Duration.between(startTime, endTime).toMillis()));
+                System.out.printf("%nEvent Loop was blocked for %s ms due to this operation %n%n",
+                        Duration.between(startTime, endTime).toMillis());
             } else {
-                System.out.println(String.format("No handler found for %s", event.key));
+                System.out.printf("No handler found for %s%n%n", event.key);
             }
         }
 
-        if (resultsOfAsyncEventsAreAvailable(processedEvents)) {
-            produceOutputFor(processedEvents.poll());
+        var processedEvent = processedEvents.poll();
+
+        if (processedEvent != null) {
+            produceOutputFor(processedEvent);
         }
     }
 
@@ -71,14 +69,6 @@ public class EventLoop {
     }
 
     private void produceOutputFor(EventResult eventResult) {
-        System.out.println(String.format("Output for Event %s : %s\n", eventResult.key, eventResult.result));
-    }
-
-    private boolean newEventsAreAvailable(Deque<Event> events) {
-        return !events.isEmpty();
-    }
-
-    private boolean resultsOfAsyncEventsAreAvailable(Deque<EventResult> events) {
-        return !processedEvents.isEmpty();
+        System.out.printf("%nOutput for Event %s : %s%n", eventResult.key, eventResult.result);
     }
 }
